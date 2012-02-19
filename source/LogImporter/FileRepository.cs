@@ -38,6 +38,7 @@ namespace LogImporter
 
             return (from f in this.files
                     where f.Name == lastEntry.LogFilename || !importedFileNames.Contains(f.Name)
+                    orderby f.Name
                     select f);
         }
     }
