@@ -25,10 +25,11 @@ namespace LogImporter.Tests.Transformations
             };
 
             Assert.DoesNotThrow(() => target.Apply(entry));
+            Assert.Null(entry.CleanUri);
         }
 
         [Fact]
-        public void ApplyLeavesSimpleUrlUntouched()
+        public void ApplyLeavesOriginalUrlUntouched()
         {
             var target = new CleanUrlTransformation();
 
@@ -59,7 +60,7 @@ namespace LogImporter.Tests.Transformations
 
             target.Apply(entry);
 
-            Assert.Equal(cleanlUrl, entry.csUriStem);
+            Assert.Equal(cleanlUrl, entry.CleanUri);
         }
 
         [Fact]
@@ -77,7 +78,7 @@ namespace LogImporter.Tests.Transformations
 
             target.Apply(entry);
 
-            Assert.Equal(cleanlUrl, entry.csUriStem);
+            Assert.Equal(cleanlUrl, entry.CleanUri);
         }
     }
 }

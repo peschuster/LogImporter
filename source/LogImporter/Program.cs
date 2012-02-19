@@ -13,7 +13,7 @@ namespace LogImporter
 
             using (IpLookupService service = new IpLookupService())
             {
-                LogParser parser = new LogParser(reader, @"J:\logs\W3SVC8_services", "*.log");
+                LogParser parser = new LogParser(reader, @"J:\mbi_logs\W3SVC8_services", "*.log");
 
                 var entries = parser.ParseEntries(
                     new CleanUrlTransformation(),
