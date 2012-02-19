@@ -7,9 +7,12 @@
 		<SourceDir>../source</SourceDir>
 		<DistDir>../dist</DistDir>
 		<IlmergePath>../Tools/ILMerge.exe</IlmergePath>
+		<XunitPath>../Tools/xunit-1.9/xunit.runner.msbuild.dll</XunitPath>
 
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 	</PropertyGroup>
+
+	<UsingTask AssemblyFile="$(XunitPath)" TaskName="Xunit.Runner.MSBuild.xunit"/>
 
 	<ItemGroup>
 		<BinFiles Include="$(BinDir)/**\*" />
@@ -39,7 +42,11 @@
 			ContinueOnError="false" />
 	</Target>
 
-	<Target Name="dist">
+	<Target Name="test" DependsOnTargets="build">
+		<xunit Assembly="$(BinDir)\LogImporter.Tests.dll" />
+	</Target>
+
+	<Target Name="dist" DependsOnTargets="build">
 
 		<RemoveDir Condition="Exists('$(DistDir)')" Directories="$(DistDir)"/>
 		<MakeDir Directories="$(DistDir)"/>
