@@ -2,7 +2,7 @@
 #ignore thumbnails created by windows
 Thumbs.db
 package*/
-build*/
+dist/
 #Ignore files build by Visual Studio
 *.obj
 *.exe
