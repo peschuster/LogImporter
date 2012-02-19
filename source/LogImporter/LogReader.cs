@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using LogImporter.Configurations;
 
@@ -6,11 +7,14 @@ namespace LogImporter
 {
     public class LogReader
     {
-        private readonly ILogConfiguration mapping;
+        private readonly ILogConfiguration adapter;
 
-        public LogReader(ILogConfiguration mapping)
+        public LogReader(ILogConfiguration adapter)
         {
-            this.mapping = mapping;
+            if (adapter == null)
+                throw new ArgumentNullException("adapter");
+
+            this.adapter = adapter;
         }
 
         public IEnumerable<LogEntry> ReadFile(FileInfo file)
@@ -30,14 +34,14 @@ namespace LogImporter
 
                     while ((line = reader.ReadLine()) != null)
                     {
-                        if (this.mapping.IsFieldConfiguration(line))
+                        if (this.adapter.IsFieldConfiguration(line))
                         {
-                            fields = this.mapping.ReadFieldConfiguration(line);
+                            fields = this.adapter.ReadFieldConfiguration(line);
 
                             continue;
                         }
 
-                        if (this.mapping.IsComment(line))
+                        if (this.adapter.IsComment(line))
                             continue;
 
                         var entry = this.CreateEntry(fields, line.Split(' '));
@@ -70,7 +74,7 @@ namespace LogImporter
                 if (values.Length <= index)
                     continue;
 
-                this.mapping.SetValue(result, field, values[index]);
+                this.adapter.SetValue(result, field, values[index]);
             }
 
             return result;

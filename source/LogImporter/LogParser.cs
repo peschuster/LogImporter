@@ -1,37 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using LogImporter.Transformations;
 
 namespace LogImporter
 {
     internal class LogParser
     {
-        private readonly FileInfo[] files;
+        private readonly IFileRepository fileService;
 
         private readonly LogReader reader;
 
-        public LogParser(LogReader reader, DirectoryInfo directory, string pattern)
+        public LogParser(LogReader reader, IFileRepository fileService)
         {
-            if (reader == null)
+             if (reader == null)
                 throw new ArgumentNullException("reader");
 
-            if (directory == null)
-                throw new ArgumentNullException("directory");
-
-            if (!directory.Exists)
-                throw new ArgumentException("Directory does not exist.", "directory");
+             if (fileService == null)
+                 throw new ArgumentNullException("files");
 
             this.reader = reader;
-
-            this.files = string.IsNullOrWhiteSpace(pattern) 
-                ? directory.GetFiles() 
-                : directory.GetFiles(pattern);
+            this.fileService = fileService;
         }
 
         public IEnumerable<LogEntry> ParseEntries(params ITransformation[] transformations)
         {
-            foreach (var file in this.files)
+            return this.ParseEntries(
+                this.fileService.GetFiles(), 
+                transformations);
+        }
+
+        public IEnumerable<LogEntry> ParseEntries(IEnumerable<string> importedFileNames, LogEntry lastEntry, params ITransformation[] transformations)
+        {
+            if (importedFileNames == null)
+                throw new ArgumentNullException("importedFileNames");
+
+            if (lastEntry == null)
+                throw new ArgumentNullException("lastEntry");
+
+            return this.ParseEntries(
+                this.fileService.GetFiles(importedFileNames, lastEntry), 
+                transformations)
+                .Where(e => e.LogFilename != lastEntry.LogFilename || e.LogRow > lastEntry.LogRow);
+        }
+  
+        private IEnumerable<LogEntry> ParseEntries(IEnumerable<FileInfo> files, ITransformation[] transformations)
+        {
+            foreach (var file in files)
             {
                 var entries = this.reader.ReadFile(file);
 

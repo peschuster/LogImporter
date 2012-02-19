@@ -5,13 +5,13 @@ using System.Linq;
 using System.Globalization;
 using Dapper;
 
-namespace LogImporter.Writers
+namespace LogImporter.Database
 {
-    public class SqlServerWriter : IEntryWriter
+    public class SqlServerDb : IDbAdapter
     {
         private readonly string connectionString;
 
-        public SqlServerWriter(string connectionString)
+        public SqlServerDb(string connectionString)
         {
             this.connectionString = connectionString;
         }
@@ -26,6 +26,17 @@ namespace LogImporter.Writers
                 {
                     connection.Insert(entry, tableName: tableName);
                 }
+            }
+        }
+
+        public IEnumerable<string> GetFileNames(string tableName)
+        {
+            using (IDbConnection connection = new SqlConnection(this.connectionString))
+            {
+                connection.Open();
+
+                return connection
+                    .Query<string>(string.Format(CultureInfo.InvariantCulture, "select distinct LogFilename from {0} order by TimeStamp asc", tableName));
             }
         }
 

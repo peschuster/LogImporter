@@ -9,12 +9,12 @@ using System.Text;
 using System.Threading;
 using Dapper;
 
-namespace LogImporter.Writers
+namespace LogImporter.Database
 {
     /// <summary>
     /// Sql Mapper Extensions: Dapper.Contrib (see https://github.com/SamSaffron/dapper-dot-net/blob/master/Dapper.Contrib/SqlMapperExtensions.cs)
     /// </summary>
-    public static class SqlMapperExtensions
+    internal static class SqlMapperExtensions
     {
         public interface IProxy
         {
@@ -445,7 +445,7 @@ namespace LogImporter.Writers
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    public class TableAttribute : Attribute
+    internal class TableAttribute : Attribute
     {
         public TableAttribute(string tableName)
         {
@@ -456,12 +456,12 @@ namespace LogImporter.Writers
 
     // do not want to depend on data annotations that is not in client profile
     [AttributeUsage(AttributeTargets.Property)]
-    public class KeyAttribute : Attribute
+    internal class KeyAttribute : Attribute
     {
     }
 
     [AttributeUsage(AttributeTargets.Property)]
-    public class WriteAttribute : Attribute
+    internal class WriteAttribute : Attribute
     {
         public WriteAttribute(bool write)
         {
@@ -469,13 +469,13 @@ namespace LogImporter.Writers
         }
         public bool Write { get; private set; }
     }
-    
-    public interface ISqlAdapter
+
+    internal interface ISqlAdapter
     {
         int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, String tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert);
     }
 
-    public class SqlServerAdapter : ISqlAdapter
+    internal class SqlServerAdapter : ISqlAdapter
     {
         public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, String tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
         {
@@ -489,7 +489,7 @@ namespace LogImporter.Writers
         }
     }
 
-    public class PostgresAdapter : ISqlAdapter
+    internal class PostgresAdapter : ISqlAdapter
     {
         public int Insert(IDbConnection connection, IDbTransaction transaction, int? commandTimeout, String tableName, string columnList, string parameterList, IEnumerable<PropertyInfo> keyProperties, object entityToInsert)
         {

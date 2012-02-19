@@ -107,13 +107,16 @@
     <Compile Include="Converters\OptionalIntegerConverter.cs" />
     <Compile Include="Converters\OptionalStringConverter.cs" />
     <Compile Include="Exceptions\UsageException.cs" />
+    <Compile Include="FileRepository.cs" />
     <Compile Include="GeoIp\Country.cs" />
     <Compile Include="GeoIp\DatabaseInfo.cs" />
     <Compile Include="GeoIp\Location.cs" />
     <Compile Include="GeoIp\LookupService.cs" />
+    <Compile Include="IFileRepository.cs" />
     <Compile Include="IIpLookupService.cs" />
     <Compile Include="GeoIp\GeoIpLookupService.cs" />
     <Compile Include="IOptions.cs" />
+    <Compile Include="Kernel.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="GeoIp\Region.cs" />
     <Compile Include="GeoIp\RegionName.cs" />
@@ -125,9 +128,9 @@
     <Compile Include="Transformations\CleanUrlTransformation.cs" />
     <Compile Include="Transformations\GeoLookupTransformation.cs" />
     <Compile Include="Transformations\ITransformation.cs" />
-    <Compile Include="Writers\IEntryWriter.cs" />
-    <Compile Include="Writers\SqlMapperExtensions.cs" />
-    <Compile Include="Writers\SqlServerWriter.cs" />
+    <Compile Include="Database\IDbAdapter.cs" />
+    <Compile Include="Database\SqlMapperExtensions.cs" />
+    <Compile Include="Database\SqlServerDb.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
