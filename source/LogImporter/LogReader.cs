@@ -18,7 +18,7 @@ namespace LogImporter
             FileStream stream = file.OpenRead();
 
             int row = 0;
-            IDictionary<int, string> fieldIndex = new Dictionary<int, string>();
+            IDictionary<int, string> fields = new Dictionary<int, string>();
 
             try
             {
@@ -32,7 +32,7 @@ namespace LogImporter
                     {
                         if (this.mapping.IsFieldConfiguration(line))
                         {
-                            fieldIndex = this.mapping.ReadFieldConfiguration(line);
+                            fields = this.mapping.ReadFieldConfiguration(line);
 
                             continue;
                         }
@@ -40,7 +40,7 @@ namespace LogImporter
                         if (this.mapping.IsComment(line))
                             continue;
 
-                        var entry = this.CreateEntry(fieldIndex, line.Split(' '));
+                        var entry = this.CreateEntry(fields, line.Split(' '));
 
                         if (entry == null)
                             continue;

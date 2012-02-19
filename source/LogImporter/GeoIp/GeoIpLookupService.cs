@@ -21,17 +21,17 @@ namespace LogImporter.GeoIp
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 "GeoIP.dat");
 
-            this.service = new LookupService(this.geoIpDatePath, LookupService.GeoipStandard);
+            this.service = new LookupService(this.geoIpDatePath, LookupService.GeoipMemoryCache);
 
             this.cache = new Dictionary<string, Country>();
         }
 
         public Country GetCountry(string ipAddress)
         {
-                if (!this.cache.ContainsKey(ipAddress))
-                {
-                    this.cache[ipAddress] = this.service.GetCountry(ipAddress);
-                }
+            if (!this.cache.ContainsKey(ipAddress))
+            {
+                this.cache[ipAddress] = this.service.GetCountry(ipAddress);
+            }
 
             return this.cache[ipAddress];
         }
@@ -45,15 +45,15 @@ namespace LogImporter.GeoIp
 
         protected virtual void Dispose(bool dispose)
         {
-                if (dispose && !this.disposed)
-                {
-                        if (this.service != null)
-                        this.service.Dispose();
+            if (dispose && !this.disposed)
+            {
+                if (this.service != null)
+                    this.service.Dispose();
 
-                    this.cache.Clear();
+                this.cache.Clear();
 
-                    this.disposed = true;
-                }
+                this.disposed = true;
+            }
         }
     }
 }

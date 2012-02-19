@@ -1,6 +1,8 @@
 ﻿using LogImporter.Configurations;
 using LogImporter.GeoIp;
 using LogImporter.Transformations;
+using LogImporter.Exceptions;
+using System;
 
 namespace LogImporter
 {
@@ -8,17 +10,38 @@ namespace LogImporter
     {
         static void Main(string[] args)
         {
-            ILogConfiguration configuration = new W3CExtended();
+            var options = new CommandLine();
 
-            var reader = new LogReader(configuration);
-
-            using (GeoIpLookupService service = new GeoIpLookupService())
+            try
             {
-                LogParser parser = new LogParser(reader, @"J:\mbi_logs\W3SVC8_services", "*.log");
+                // Read arguments from command line.
+                options.Parse(args);
 
-                var entries = parser.ParseEntries(
-                    new CleanUrlTransformation(),
-                    new GeoLookupTransformation(service));
+                // Validate all options.
+                options.Validate();
+
+                ILogConfiguration configuration = new W3CExtended();
+
+                var reader = new LogReader(configuration);
+
+                using (GeoIpLookupService service = new GeoIpLookupService())
+                {
+                    var parser = new LogParser(reader, options.Directory, options.Pattern);
+
+                    var entries = parser.ParseEntries(
+                        new CleanUrlTransformation(),
+                        new GeoLookupTransformation(service));
+                }
+
+                Environment.Exit(0);
+            }
+            catch (UsageException exception)
+            {
+                Console.Error.WriteLine(exception.Message);
+
+                options.PrintUsage(Console.Error);
+
+                Environment.Exit(1);
             }
         }
     }

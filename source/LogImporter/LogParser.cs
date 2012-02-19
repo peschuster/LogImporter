@@ -11,15 +11,22 @@ namespace LogImporter
 
         private readonly LogReader reader;
 
-        public LogParser(LogReader reader, string path, string pattern)
+        public LogParser(LogReader reader, DirectoryInfo directory, string pattern)
         {
-            this.reader = reader;
-            var directory = new DirectoryInfo(path);
+            if (reader == null)
+                throw new ArgumentNullException("reader");
+
+            if (directory == null)
+                throw new ArgumentNullException("directory");
 
             if (!directory.Exists)
                 throw new ArgumentException("Directory does not exist.", "directory");
 
-            this.files = directory.GetFiles(pattern);
+            this.reader = reader;
+
+            this.files = string.IsNullOrWhiteSpace(pattern) 
+                ? directory.GetFiles() 
+                : directory.GetFiles(pattern);
         }
 
         public IEnumerable<LogEntry> ParseEntries(params ITransformation[] transformations)
