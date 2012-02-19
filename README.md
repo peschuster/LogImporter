@@ -11,6 +11,15 @@
  * Resolve client ip address to country name and code (using GeoIP.dat by Maxmind)
 
 
-## Supported formats
+### Supported formats
 
  * W3C extended (IIS)
+
+## Build
+
+How to build LogImporter:
+ 
+1. Go to `\build\` directory.
+2. Execute `go dist` on the command line.
+
+*Note: Maybe you have to adjust the path to `MSBuild.exe` in `build\go.bat` to the right .NET version number.*
