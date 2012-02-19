@@ -46,7 +46,7 @@
 		<xunit Assembly="$(BinDir)\LogImporter.Tests.dll" />
 	</Target>
 
-	<Target Name="dist" DependsOnTargets="build">
+	<Target Name="dist" DependsOnTargets="build;test">
 
 		<RemoveDir Condition="Exists('$(DistDir)')" Directories="$(DistDir)"/>
 		<MakeDir Directories="$(DistDir)"/>
