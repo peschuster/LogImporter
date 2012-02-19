@@ -4,13 +4,13 @@
 
 ## Features
 
- * Parse log files
- * Determines which log files are new/modified since last import
- * Import log data into SQL Server
- * Remove guid ids in urls to generate statistics for actual pages
- * Resolve client ip address to country name and code (using GeoIP.dat by Maxmind)
+ * **[done]** Parse log files
+ * *[in progress]* Determines which log files are new/modified since last import
+ * *[in progress]* Import log data into SQL Server
+ * **[done]** Remove guid ids in urls to generate statistics for actual pages
+ * **[done]** Resolve client ip address to country name and code (using GeoIP.dat by Maxmind)
 
 
 ## Supported formats
 
- * W3C extended (IIS)
+ * **[done]** W3C extended (IIS)
