@@ -5,9 +5,9 @@ namespace LogImporter.Transformations
 {
     public class GeoLookupTransformation : ITransformation
     {
-        private readonly IpLookupService lookupService;
+        private readonly IIpLookupService lookupService;
 
-        public GeoLookupTransformation(IpLookupService lookupService)
+        public GeoLookupTransformation(IIpLookupService lookupService)
         {
             if (lookupService == null)
                 throw new ArgumentNullException("lookupService");
@@ -17,13 +17,19 @@ namespace LogImporter.Transformations
 
         public void Apply(LogEntry entry)
         {
-            Country country = null;
-
+            if (entry == null)
+                throw new ArgumentNullException("entry");
+            
             if (!string.IsNullOrWhiteSpace(entry.cIp))
-                country = this.lookupService.GetCountry(entry.cIp.Trim());
+            {
+                Country country = this.lookupService.GetCountry(entry.cIp.Trim());
 
-            entry.CountryName = country != null ? country.Name : null;
-            entry.CountryCode = country != null ? country.Code : null;
+                if (country != null)
+                {
+                    entry.CountryName = country.Name;
+                    entry.CountryCode = country.Code;
+                }
+            }
         }
     }
 }

@@ -106,7 +106,8 @@
     <Compile Include="GeoIp\DatabaseInfo.cs" />
     <Compile Include="GeoIp\Location.cs" />
     <Compile Include="GeoIp\LookupService.cs" />
-    <Compile Include="IpLookupService.cs" />
+    <Compile Include="IIpLookupService.cs" />
+    <Compile Include="GeoIp\GeoIpLookupService.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="GeoIp\Region.cs" />
     <Compile Include="GeoIp\RegionName.cs" />

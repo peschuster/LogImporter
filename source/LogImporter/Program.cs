@@ -1,4 +1,5 @@
 ﻿using LogImporter.Configurations;
+using LogImporter.GeoIp;
 using LogImporter.Transformations;
 
 namespace LogImporter
@@ -11,7 +12,7 @@ namespace LogImporter
 
             var reader = new LogReader(configuration);
 
-            using (IpLookupService service = new IpLookupService())
+            using (GeoIpLookupService service = new GeoIpLookupService())
             {
                 LogParser parser = new LogParser(reader, @"J:\mbi_logs\W3SVC8_services", "*.log");
 

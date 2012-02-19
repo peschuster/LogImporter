@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using LogImporter.GeoIp;
 
-namespace LogImporter
+namespace LogImporter.GeoIp
 {
-    public class IpLookupService : IDisposable
+    public class GeoIpLookupService : IDisposable, IIpLookupService
     {
         private readonly string geoIpDatePath;
 
@@ -16,7 +15,7 @@ namespace LogImporter
 
         private readonly IDictionary<string, Country> cache;
 
-        public IpLookupService()
+        public GeoIpLookupService()
         {
             this.geoIpDatePath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
@@ -29,10 +28,10 @@ namespace LogImporter
 
         public Country GetCountry(string ipAddress)
         {
-            if (!this.cache.ContainsKey(ipAddress))
-            {
-                this.cache[ipAddress] = this.service.GetCountry(ipAddress);
-            }
+                if (!this.cache.ContainsKey(ipAddress))
+                {
+                    this.cache[ipAddress] = this.service.GetCountry(ipAddress);
+                }
 
             return this.cache[ipAddress];
         }
@@ -46,15 +45,15 @@ namespace LogImporter
 
         protected virtual void Dispose(bool dispose)
         {
-            if (dispose && !this.disposed)
-            {
-                if (this.service != null)
-                    this.service.Dispose();
+                if (dispose && !this.disposed)
+                {
+                        if (this.service != null)
+                        this.service.Dispose();
 
-                this.cache.Clear();
+                    this.cache.Clear();
 
-                this.disposed = true;
-            }
+                    this.disposed = true;
+                }
         }
     }
 }
