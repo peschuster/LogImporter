@@ -42,7 +42,21 @@ namespace LogImporter
 
         public void PrintUsage(TextWriter writer)
         {
+            if (writer == null)
+                throw new ArgumentNullException("writer");
+            
+            writer.WriteLine();
+            writer.WriteLine(new string('=', 30));
+            writer.WriteLine();
+
+            writer.WriteLine("LogImporter usage:");
+            writer.WriteLine();
+            
             this.options.WriteOptionDescriptions(writer);
+            
+            writer.WriteLine();
+            writer.WriteLine(new string('=', 30));
+            writer.WriteLine();
         }
 
         public void Parse(string[] arguments)
@@ -94,22 +108,22 @@ namespace LogImporter
 
             options
                 .Add(
-                    "d|directory=",
+                    "d=",
                     "Directory with log files",
                     (string s) => this.Directory = new DirectoryInfo(s))
 
                 .Add(
-                    "p|pattern=",
+                    "p=",
                     "Pattern for log files",
                     (string s) => this.Pattern = s)
 
                 .Add(
-                    "c|connectionstring=",
+                    "c=",
                     "Connection string for target database",
                     (string s) => this.ConnectionString = s)
 
                 .Add(
-                    "t|tablename=",
+                    "t=",
                     "Target table name",
                     (string s) => this.TableName = s)
 

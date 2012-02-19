@@ -25,8 +25,12 @@ namespace LogImporter
             }
             catch (UsageException exception)
             {
-                Console.Error.WriteLine(exception.Message);
+                var color = Console.ForegroundColor;
 
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine(Environment.NewLine + exception.Message);
+
+                Console.ForegroundColor = color;
                 options.PrintUsage(Console.Error);
 
                 Environment.Exit(2);
