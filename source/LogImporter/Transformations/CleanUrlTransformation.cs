@@ -12,7 +12,8 @@ namespace LogImporter.Transformations
 
             if (!string.IsNullOrEmpty(entry.csUriStem))
             {
-                entry.CleanUri = this.ReplaceGuids(entry.csUriStem);
+                entry.CleanUri = this.RemoveTrailingSlash(
+                    this.ReplaceGuids(entry.csUriStem));
             }
         }
 
@@ -23,6 +24,14 @@ namespace LogImporter.Transformations
             return Regex.Replace(input, pattern, string.Empty)
                 .Replace(@"\\", @"\")
                 .Replace(@"//", @"/");
+        }
+
+        private string RemoveTrailingSlash(string input)
+        {
+            if (input.Length > 1 && (input.EndsWith("\\") || input.EndsWith("/")))
+                return input.Substring(0, input.Length - 1);
+
+            return input;
         }
     }
 }

@@ -64,12 +64,30 @@ namespace LogImporter.Tests.Transformations
         }
 
         [Fact]
-        public void ApplyRemovesGuidsAtEnding()
+        public void ApplyRemovesGuidsAndTrainlingSlah()
         {
             var target = new CleanUrlTransformation();
 
             string originalUrl = "my/url/" + Guid.NewGuid();
-            string cleanlUrl = "my/url/";
+            string cleanlUrl = "my/url";
+
+            var entry = new LogEntry
+            {
+                csUriStem = originalUrl,
+            };
+
+            target.Apply(entry);
+
+            Assert.Equal(cleanlUrl, entry.CleanUri);
+        }
+
+        [Fact]
+        public void ApplyDoesNotTouchRootOnly()
+        {
+            var target = new CleanUrlTransformation();
+
+            string originalUrl = "/" + Guid.NewGuid();
+            string cleanlUrl = "/";
 
             var entry = new LogEntry
             {
