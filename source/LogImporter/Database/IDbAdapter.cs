@@ -2,12 +2,32 @@ using System.Collections.Generic;
 
 namespace LogImporter.Database
 {
+    /// <summary>
+    /// Database adapter.
+    /// </summary>
     public interface IDbAdapter
     {
-        void Write(IEnumerable<LogEntry> entries, string tableName);
+        /// <summary>
+        /// Returns the maximum number of possible concurrent connections.
+        /// </summary>
+        int MaxConcurrentConnections { get; }
 
-        LogEntry GetLastEntry(string tableName);
+        /// <summary>
+        /// Writes all log entries into the database.
+        /// </summary>
+        /// <param name="entries">The list of log entries.</param>
+        void Write(IEnumerable<LogEntry> entries);
 
-        IEnumerable<string> GetFileNames(string tableName);
+        /// <summary>
+        /// Returns the latest entry from the database.
+        /// </summary>
+        /// <returns></returns>
+        LogEntry GetLastEntry();
+
+        /// <summary>
+        /// Returns all distinct log file names in the database table.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<string> GetFileNames();
     }
 }

@@ -39,6 +39,11 @@ namespace LogImporter.Configurations
             };
         }
 
+        public IDictionary<int, string> DefaultFieldConfiguration
+        {
+            get { return new Dictionary<int, string>(); }
+        }
+
         public bool IsComment(string line)
         {
             if (string.IsNullOrEmpty(line))

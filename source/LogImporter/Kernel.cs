@@ -18,8 +18,8 @@ namespace LogImporter
             var reader = new LogReader(configuration);       
     
             IDbAdapter db = options.Sequential 
-                ? new SqlServerDb(options.ConnectionString)
-                : new SqlServerDbParallel(options.ConnectionString);
+                ? new SqlServerAdapter(options.ConnectionString, options.TableName)
+                : new SqlServerParallelAdapter(options.ConnectionString, options.TableName);
 
             var files = new FileRepository(options.Directory, options.Pattern);
 
@@ -34,7 +34,7 @@ namespace LogImporter
                 };
 
                 IEnumerable<LogEntry> entries;
-                LogEntry lastEntry = db.GetLastEntry(options.TableName);
+                LogEntry lastEntry = db.GetLastEntry();
                 
                 if (options.Force || lastEntry == null)
                 {
@@ -42,13 +42,13 @@ namespace LogImporter
                 } 
                 else
                 {
-                    IEnumerable<string> importedFileNames = db.GetFileNames(options.TableName);
+                    IEnumerable<string> importedFileNames = db.GetFileNames();
 
                     entries = parser.ParseEntries(importedFileNames, lastEntry, transformations);
                 }
 
                 // Write log entries into database.
-                db.Write(entries, options.TableName);
+                db.Write(entries);
             }
         }
     }

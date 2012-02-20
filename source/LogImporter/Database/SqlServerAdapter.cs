@@ -8,22 +8,30 @@ using Dapper;
 
 namespace LogImporter.Database
 {
-    public class SqlServerDb : IDbAdapter
+    public class SqlServerAdapter : IDbAdapter
     {
         protected readonly string connectionString;
 
-        public SqlServerDb(string connectionString)
+        protected readonly string tableName;
+
+        public SqlServerAdapter(string connectionString, string tableName)
         {
             this.connectionString = connectionString;
+            this.tableName = tableName;
+        }
+        
+        public virtual int MaxConcurrentConnections 
+        {
+            get { return 1; }
         }
 
-        public virtual void Write(IEnumerable<LogEntry> entries, string tableName)
+        public virtual void Write(IEnumerable<LogEntry> entries)
         {
             using (IDbConnection connection = new SqlConnection(this.connectionString))
             {
                 connection.Open();
 
-                string cmd = SqlMapperExtensions.GetInsertStatement(typeof(LogEntry), tableName: tableName);
+                string cmd = SqlMapperExtensions.GetInsertStatement(typeof(LogEntry), tableName: this.tableName);
 
                 foreach (LogEntry entry in entries)
                 {
@@ -45,8 +53,8 @@ namespace LogImporter.Database
                 // -2146232060 -> truncated data
                 if (exception.ErrorCode == -2146232060)
                 {
-                    Console.Error.WriteLine("Error (data exceeded range):");
-                    Console.Error.WriteLine(entry.LogFilename + " " + entry.LogRow + " - " + entry.csUriStem + entry.csUriQuery + " - " + entry.csUserAgent);
+                    ConsoleWriter.WriteError("Error (data exceeded range):");
+                    ConsoleWriter.WriteError(entry.LogFilename + " " + entry.LogRow + " - " + entry.csUriStem + entry.csUriQuery + " - " + entry.csUserAgent);
 
                     return;
                 }
@@ -55,25 +63,25 @@ namespace LogImporter.Database
             }
         }
 
-        public virtual IEnumerable<string> GetFileNames(string tableName)
+        public virtual IEnumerable<string> GetFileNames()
         {
             using (IDbConnection connection = new SqlConnection(this.connectionString))
             {
                 connection.Open();
 
                 return connection
-                    .Query<string>(string.Format(CultureInfo.InvariantCulture, "select distinct LogFilename from {0}", tableName));
+                    .Query<string>(string.Format(CultureInfo.InvariantCulture, "select distinct LogFilename from {0}", this.tableName));
             }
         }
 
-        public virtual LogEntry GetLastEntry(string tableName)
+        public virtual LogEntry GetLastEntry()
         {
             using (IDbConnection connection = new SqlConnection(this.connectionString))
             {
                 connection.Open();
 
                 return connection
-                    .Query<LogEntry>(string.Format(CultureInfo.InvariantCulture, "select * from {0} order by TimeStamp desc", tableName))
+                    .Query<LogEntry>(string.Format(CultureInfo.InvariantCulture, "select * from {0} order by TimeStamp desc", this.tableName))
                     .FirstOrDefault();
             }
         }

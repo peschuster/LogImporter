@@ -26,9 +26,9 @@ namespace LogImporter
 
         public IEnumerable<LogEntry> ParseEntries(params ITransformation[] transformations)
         {
-            return this.ParseEntries(
-                this.fileService.GetFiles(), 
-                transformations);
+            IEnumerable<FileInfo> files = this.fileService.GetFiles();
+
+            return this.ParseEntries(files, transformations);
         }
 
         public IEnumerable<LogEntry> ParseEntries(IEnumerable<string> importedFileNames, LogEntry lastEntry, params ITransformation[] transformations)
@@ -39,10 +39,25 @@ namespace LogImporter
             if (lastEntry == null)
                 throw new ArgumentNullException("lastEntry");
 
-            return this.ParseEntries(
-                this.fileService.GetFiles(importedFileNames, lastEntry), 
-                transformations)
-                .Where(e => e.LogFilename != lastEntry.LogFilename || e.LogRow > lastEntry.LogRow);
+            IEnumerable<FileInfo> files = this.fileService.GetFiles(importedFileNames, lastEntry);
+
+            return this.ParseEntries(files, transformations)
+                .Where(AllowInsert(lastEntry));
+        }
+
+        /// <summary>
+        /// Don't insert already existing records (determined by <c>LogRow</c> in latest inserted file).
+        /// </summary>
+        /// <param name="lastEntry"></param>
+        /// <returns></returns>
+        private static Func<LogEntry, bool> AllowInsert(LogEntry lastEntry)
+        {
+            if (lastEntry == null)
+                return (entry) => true;
+
+            return (entry) => 
+                entry.LogFilename != lastEntry.LogFilename 
+                || entry.LogRow > lastEntry.LogRow;
         }
   
         private IEnumerable<LogEntry> ParseEntries(IEnumerable<FileInfo> files, ITransformation[] transformations)

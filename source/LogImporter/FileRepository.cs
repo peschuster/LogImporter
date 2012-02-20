@@ -5,21 +5,31 @@ using System.Linq;
 
 namespace LogImporter
 {
+    /// <summary>
+    /// Repository for file system access.
+    /// </summary>
     public class FileRepository : IFileRepository
     {
-        private readonly FileInfo[] files;
+        private readonly IEnumerable<FileInfo> files;
 
-        public FileRepository(DirectoryInfo directory, string pattern)
+        public FileRepository(DirectoryInfo directory, string pattern = null)
         {
             if (directory == null)
                 throw new ArgumentNullException("directory");
 
             if (!directory.Exists)
                 throw new ArgumentException("Directory does not exist.", "directory");
-            
-            this.files = string.IsNullOrWhiteSpace(pattern)
-                ? directory.GetFiles()
-                : directory.GetFiles(pattern);
+
+            if (string.IsNullOrWhiteSpace(pattern))
+            {
+                // Read all files
+                this.files = directory.EnumerateFiles();
+            }
+            else
+            {
+                // Read all files for pattern
+                this.files = directory.EnumerateFiles(pattern);
+            }
         }
 
         public IEnumerable<FileInfo> GetFiles()

@@ -102,11 +102,13 @@
   <ItemGroup>
     <Compile Include="CommandLine.cs" />
     <Compile Include="Configurations\ILogConfiguration.cs" />
+    <Compile Include="ConsoleWriter.cs" />
     <Compile Include="Converters\IConverter.cs" />
     <Compile Include="Converters\OptionalDateTimeConverter.cs" />
     <Compile Include="Converters\OptionalIntegerConverter.cs" />
     <Compile Include="Converters\OptionalStringConverter.cs" />
-    <Compile Include="Database\SqlServerDbParallel.cs" />
+    <Compile Include="Database\ConcurrentConnectionFactory.cs" />
+    <Compile Include="Database\SqlServerParallelAdapter.cs" />
     <Compile Include="Exceptions\UsageException.cs" />
     <Compile Include="FileRepository.cs" />
     <Compile Include="GeoIp\Country.cs" />
@@ -131,7 +133,7 @@
     <Compile Include="Transformations\ITransformation.cs" />
     <Compile Include="Database\IDbAdapter.cs" />
     <Compile Include="Database\SqlMapperExtensions.cs" />
-    <Compile Include="Database\SqlServerDb.cs" />
+    <Compile Include="Database\SqlServerAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">

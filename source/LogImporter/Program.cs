@@ -21,28 +21,27 @@ namespace LogImporter
                 var kernel = new Kernel();
 
                 var s = Stopwatch.StartNew();
+
+                // Run log import
                 kernel.Run(options);
+                
                 s.Stop();
 
-                Console.Out.WriteLine("Time taken: " + s.Elapsed.ToString());
+                ConsoleWriter.WriteInfo("Time taken: {0}", s.Elapsed);
 
                 Environment.Exit(0);
             }
             catch (UsageException exception)
             {
-                var color = Console.ForegroundColor;
+                ConsoleWriter.WriteError(Environment.NewLine + exception.Message);
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine(Environment.NewLine + exception.Message);
-
-                Console.ForegroundColor = color;
                 options.PrintUsage(Console.Error);
 
                 Environment.Exit(2);
             }
             catch (SystemException exception)
             {
-                Console.Error.WriteLine(exception.ToString());
+                ConsoleWriter.WriteError(exception.ToString());
 
                 Environment.Exit(1);
             }
