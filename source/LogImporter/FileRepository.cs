@@ -37,7 +37,7 @@ namespace LogImporter
                 throw new ArgumentNullException("lastEntry");
 
             return (from f in this.files
-                    where f.Name == lastEntry.LogFilename || !importedFileNames.Contains(f.Name)
+                    where f.FullName == lastEntry.LogFilename || !importedFileNames.Contains(f.FullName)
                     orderby f.Name
                     select f);
         }

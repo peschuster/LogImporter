@@ -198,6 +198,36 @@ namespace LogImporter.Database
             return id;
         }
 
+        public static string GetInsertStatement(Type type, string tableName = null)
+        {
+            var name = tableName ?? GetTableName(type);
+
+            var sbColumnList = new StringBuilder(null);
+
+            var allProperties = TypePropertiesCache(type);
+            var keyProperties = KeyPropertiesCache(type);
+            var allPropertiesExceptKey = allProperties.Except(keyProperties);
+
+            for (var i = 0; i < allPropertiesExceptKey.Count(); i++)
+            {
+                var property = allPropertiesExceptKey.ElementAt(i);
+                sbColumnList.Append(property.Name);
+                if (i < allPropertiesExceptKey.Count() - 1)
+                    sbColumnList.Append(", ");
+            }
+
+            var sbParameterList = new StringBuilder(null);
+            for (var i = 0; i < allPropertiesExceptKey.Count(); i++)
+            {
+                var property = allPropertiesExceptKey.ElementAt(i);
+                sbParameterList.AppendFormat("@{0}", property.Name);
+                if (i < allPropertiesExceptKey.Count() - 1)
+                    sbParameterList.Append(", ");
+            }
+
+            return string.Format("insert into {0} ({1}) values ({2})", name, sbColumnList.ToString(), sbParameterList.ToString());
+        }
+
         /// <summary>
         /// Updates entity in table "Ts", checks if the entity is modified if the entity is tracked by the Get() extension.
         /// </summary>

@@ -48,8 +48,6 @@
 
 	<Target Name="dist">
 
-		
-
 		<RemoveDir Condition="Exists('$(DistDir)')" Directories="$(DistDir)"/>
 		<MakeDir Directories="$(DistDir)"/>
 

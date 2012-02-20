@@ -4,11 +4,9 @@ namespace LogImporter
 {
     public class LogEntry
     {
-        public int Id { get; set; }
-
         public string LogFilename { get; set; }
 
-        public int? LogRow { get; set; }
+        public int LogRow { get; set; }
 
         public DateTime? TimeStamp { get; set; }
 

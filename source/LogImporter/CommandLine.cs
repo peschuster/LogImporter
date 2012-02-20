@@ -40,6 +40,11 @@ namespace LogImporter
         /// </summary>
         public bool Force { get; set; }
 
+        /// <summary>
+        /// Import data in one single thread.
+        /// </summary>
+        public bool Sequential { get; set; }
+
         public void PrintUsage(TextWriter writer)
         {
             if (writer == null)
@@ -66,6 +71,7 @@ namespace LogImporter
                 this.Directory = new DirectoryInfo(".");
                 this.Pattern = "*.*";
                 this.Force = false;
+                this.Sequential = false;
 
                 List<string> unknown = options.Parse(arguments);
 
@@ -110,29 +116,50 @@ namespace LogImporter
                 .Add(
                     "d=",
                     "Directory with log files",
-                    (string s) => this.Directory = new DirectoryInfo(s))
+                    (string s) => this.Directory = new DirectoryInfo(StripQuotes(s)))
 
                 .Add(
                     "p=",
                     "Pattern for log files",
-                    (string s) => this.Pattern = s)
+                    (string s) => this.Pattern = StripQuotes(s))
 
                 .Add(
                     "c=",
                     "Connection string for target database",
-                    (string s) => this.ConnectionString = s)
+                    (string s) => this.ConnectionString = StripQuotes(s))
 
                 .Add(
                     "t=",
                     "Target table name",
-                    (string s) => this.TableName = s)
+                    (string s) => this.TableName = StripQuotes(s))
 
                 .Add(
                     "f|force",
                     "Force full import of all files",
-                    (bool b) => this.Force = b);
+                    (bool b) => this.Force = b)
+
+                .Add(
+                    "s|sequential",
+                    "Import data in one single thread.",
+                    (bool b) => this.Sequential = b);
 
             return options;
+        }
+
+        private static string StripQuotes(string s)
+        {
+            if (s != null)
+            {
+                string t = s.Trim();
+
+                if ((t.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && t.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
+                    || (t.StartsWith("'", StringComparison.OrdinalIgnoreCase) && t.EndsWith("'", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return t.Substring(1, t.Length - 2);
+                }
+            }
+
+            return s;
         }
     }
 }

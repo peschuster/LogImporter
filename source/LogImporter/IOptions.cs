@@ -7,26 +7,31 @@ namespace LogImporter
         /// <summary>
         /// Directory with log files.
         /// </summary>
-        DirectoryInfo Directory { get;set; }
+        DirectoryInfo Directory { get; set; }
 
         /// <summary>
         /// Pattern for log file names.
         /// </summary>
-        string Pattern { get;set; }
+        string Pattern { get; set; }
 
         /// <summary>
         /// Connection string for target database.
         /// </summary>
-        string ConnectionString { get;set; }
+        string ConnectionString { get; set; }
 
         /// <summary>
         /// Target table name.
         /// </summary>
-        string TableName { get;set; }
+        string TableName { get; set; }
 
         /// <summary>
         /// Force full import of all files.
         /// </summary>
-        bool Force { get;set; }
+        bool Force { get; set; }
+
+        /// <summary>
+        /// Import data in one single thread.
+        /// </summary>
+        bool Sequential { get; set; }
     }
 }

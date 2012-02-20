@@ -49,7 +49,7 @@ namespace LogImporter
                         if (entry == null)
                             continue;
 
-                        entry.LogFilename = file.Name;
+                        entry.LogFilename = file.FullName;
                         entry.LogRow = ++row;
 
                         yield return entry;

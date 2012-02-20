@@ -1,5 +1,6 @@
 ﻿using System;
 using LogImporter.Exceptions;
+using System.Diagnostics;
 
 namespace LogImporter
 {
@@ -19,7 +20,11 @@ namespace LogImporter
 
                 var kernel = new Kernel();
 
+                var s = Stopwatch.StartNew();
                 kernel.Run(options);
+                s.Stop();
+
+                Console.Out.WriteLine("Time taken: " + s.Elapsed.ToString());
 
                 Environment.Exit(0);
             }

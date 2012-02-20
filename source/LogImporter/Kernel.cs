@@ -15,8 +15,11 @@ namespace LogImporter
                 throw new ArgumentNullException("options");
 
             var configuration = new W3CExtended();
-            var reader = new LogReader(configuration);           
-            var db = new SqlServerDb(options.ConnectionString);
+            var reader = new LogReader(configuration);       
+    
+            IDbAdapter db = options.Sequential 
+                ? new SqlServerDb(options.ConnectionString)
+                : new SqlServerDbParallel(options.ConnectionString);
 
             var files = new FileRepository(options.Directory, options.Pattern);
 
@@ -31,14 +34,14 @@ namespace LogImporter
                 };
 
                 IEnumerable<LogEntry> entries;
+                LogEntry lastEntry = db.GetLastEntry(options.TableName);
                 
-                if (options.Force)
+                if (options.Force || lastEntry == null)
                 {
                     entries = parser.ParseEntries(transformations);
                 } 
                 else
                 {
-                    LogEntry lastEntry = db.GetLastEntry(options.TableName);
                     IEnumerable<string> importedFileNames = db.GetFileNames(options.TableName);
 
                     entries = parser.ParseEntries(importedFileNames, lastEntry, transformations);
