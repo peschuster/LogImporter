@@ -9,7 +9,7 @@
 		<IlmergePath>../Tools/ILMerge.exe</IlmergePath>
 		<XunitPath>../Tools/xunit-1.9/xunit.runner.msbuild.dll</XunitPath>
 
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(XunitPath)" TaskName="Xunit.Runner.MSBuild.xunit"/>
@@ -46,7 +46,9 @@
 		<xunit Assembly="$(BinDir)\LogImporter.Tests.dll" />
 	</Target>
 
-	<Target Name="dist" DependsOnTargets="build;test">
+	<Target Name="dist">
+
+		
 
 		<RemoveDir Condition="Exists('$(DistDir)')" Directories="$(DistDir)"/>
 		<MakeDir Directories="$(DistDir)"/>
