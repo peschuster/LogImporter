@@ -25,8 +25,10 @@ namespace LogImporter.Database
             get { return 1; }
         }
 
-        public virtual void Write(IEnumerable<LogEntry> entries)
+        public virtual void Write(IEnumerable<LogEntry> entries, out long count)
         {
+            count = 0;
+
             using (IDbConnection connection = new SqlConnection(this.connectionString))
             {
                 connection.Open();
@@ -36,6 +38,8 @@ namespace LogImporter.Database
                 foreach (LogEntry entry in entries)
                 {
                     WriteEntry(connection, cmd, entry);
+                    
+                    count++;
                 }
             }
         }

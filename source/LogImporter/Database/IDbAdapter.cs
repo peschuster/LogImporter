@@ -16,7 +16,7 @@ namespace LogImporter.Database
         /// Writes all log entries into the database.
         /// </summary>
         /// <param name="entries">The list of log entries.</param>
-        void Write(IEnumerable<LogEntry> entries);
+        void Write(IEnumerable<LogEntry> entries, out long count);
 
         /// <summary>
         /// Returns the latest entry from the database.

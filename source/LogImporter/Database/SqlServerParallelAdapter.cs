@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LogImporter.Database
@@ -21,7 +22,7 @@ namespace LogImporter.Database
             }
         }
 
-        public override void Write(IEnumerable<LogEntry> entries)
+        public override void Write(IEnumerable<LogEntry> entries, out long count)
         {
             // Generate insert statement.
             string cmd = SqlMapperExtensions.GetInsertStatement(typeof(LogEntry), tableName: this.tableName);
@@ -32,10 +33,22 @@ namespace LogImporter.Database
                 MaxDegreeOfParallelism = this.MaxConcurrentConnections 
             };
 
+            long internalCount = 0;
+
             using (var connections = new ConcurrentConnectionFactory(this.connectionString, true))
             {
-                Parallel.ForEach(entries, options, (entry) => WriteEntry(connections.GetConnection(), cmd, entry));
+                Parallel.ForEach(
+                    entries, 
+                    options, 
+                    (entry) => 
+                    {
+                        WriteEntry(connections.GetConnection(), cmd, entry);
+
+                        Interlocked.Increment(ref internalCount);
+                    });
             }
+
+            count = internalCount;
         }
     }
 }

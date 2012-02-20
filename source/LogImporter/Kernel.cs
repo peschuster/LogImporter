@@ -47,8 +47,12 @@ namespace LogImporter
                     entries = parser.ParseEntries(importedFileNames, lastEntry, transformations);
                 }
 
+                long count;
+
                 // Write log entries into database.
-                db.Write(entries);
+                db.Write(entries, out count);
+
+                ConsoleWriter.WriteSuccess("Imported {0} log entries.", count);
             }
         }
     }
