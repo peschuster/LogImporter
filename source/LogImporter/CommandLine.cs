@@ -136,12 +136,12 @@ namespace LogImporter
                 .Add(
                     "f|force",
                     "Force full import of all files",
-                    (bool b) => this.Force = b)
+                    (string b) => this.Force = b != null)
 
                 .Add(
                     "s|sequential",
                     "Import data in one single thread.",
-                    (bool b) => this.Sequential = b);
+                    (string b) => this.Sequential = b != null);
 
             return options;
         }
