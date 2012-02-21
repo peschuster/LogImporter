@@ -29,5 +29,11 @@ namespace LogImporter.Database
         /// </summary>
         /// <returns></returns>
         IEnumerable<string> GetFileNames();
+
+        /// <summary>
+        /// Ensures that the log table exists and creates it, if not alread present.
+        /// </summary>
+        /// <returns></returns>
+        bool EnsureTable();
     }
 }

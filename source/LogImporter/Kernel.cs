@@ -23,6 +23,11 @@ namespace LogImporter
 
             var files = new FileRepository(options.Directory, options.Pattern);
 
+            if (options.CreateTable)
+            {
+                db.EnsureTable();
+            }
+
             using (var service = new GeoIpLookupService())
             {
                 var parser = new LogParser(reader, files);

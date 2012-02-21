@@ -1,4 +1,6 @@
-﻿CREATE TABLE [dbo].[w3clog_site](
+﻿IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND  TABLE_NAME = '$TABLENAME$'))
+BEGIN
+CREATE TABLE [dbo].[$TABLENAME$](
 	[LogFilename] [varchar](255) NOT NULL,
 	[LogRow] [int] NOT NULL,
 	[TimeStamp] [datetime] NULL,
@@ -33,6 +35,6 @@
 	[CountryName] [nvarchar](255) NULL,
 	[CountryCode] [char](2) NULL,
 	[CleanUri] [varchar](2048) NULL,
- CONSTRAINT [PK_w3clog_site] PRIMARY KEY CLUSTERED ([LogFilename] ASC, [LogRow] ASC) ON [PRIMARY]
+ CONSTRAINT [PK_$TABLENAME$] PRIMARY KEY CLUSTERED ([LogFilename] ASC, [LogRow] ASC) ON [PRIMARY]
 ) ON [PRIMARY]
-GO
+END

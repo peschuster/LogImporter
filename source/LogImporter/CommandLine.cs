@@ -45,6 +45,11 @@ namespace LogImporter
         /// </summary>
         public bool Sequential { get; set; }
 
+        /// <summary>
+        /// Create the table if it does not alread exists.
+        /// </summary>
+        public bool CreateTable { get; set; }
+
         public void PrintUsage(TextWriter writer)
         {
             if (writer == null)
@@ -132,6 +137,11 @@ namespace LogImporter
                     "t=",
                     "Target table name",
                     (string s) => this.TableName = StripQuotes(s))
+
+                .Add(
+                    "n",
+                    "Create the table if it does not alread exists",
+                    (string b) => this.CreateTable = b != null)
 
                 .Add(
                     "f|force",

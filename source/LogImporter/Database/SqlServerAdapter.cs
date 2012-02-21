@@ -25,6 +25,30 @@ namespace LogImporter.Database
             get { return 1; }
         }
 
+        public bool EnsureTable()
+        {
+            using (IDbConnection connection = new SqlConnection(this.connectionString))
+            {
+                connection.Open();
+
+                string cmd = string.Format(
+                    CultureInfo.InvariantCulture, 
+                    "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND  TABLE_NAME = '{0}'",
+                    this.tableName);
+
+                var exists = connection.Query<int>(cmd).FirstOrDefault();
+
+                if (exists == 0)
+                {
+                    // Create the table
+                    connection.Execute(Resources.InstallTable.Replace("$TABLENAME$", this.tableName));
+                }
+
+                // true, if created - otherwise false.
+                return exists != 0;
+            }
+        }
+
         public virtual void Write(IEnumerable<LogEntry> entries, out long count)
         {
             count = 0;
@@ -58,6 +82,7 @@ namespace LogImporter.Database
                 if (exception.ErrorCode == -2146232060)
                 {
                     ConsoleWriter.WriteError("Error (data exceeded range):");
+                    ConsoleWriter.WriteError(exception.Message);
                     ConsoleWriter.WriteError(entry.LogFilename + " " + entry.LogRow + " - " + entry.csUriStem + entry.csUriQuery + " - " + entry.csUserAgent);
 
                     return;

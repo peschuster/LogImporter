@@ -1,1 +1,1 @@
-bin\LogImporter.exe -d "J:\mbi_logs\W3SVC7_30-12-2011" -t w3clog_site -c "Data Source=.\SQLEXPRESS;Initial Catalog=logimporter_test;Integrated Security=True" -p "*.log"
+bin\LogImporter.exe -d "J:\mbi_logs\W3SVC8_30-12-2011" -t w3clog_services -n -c "Data Source=.\SQLEXPRESS;Initial Catalog=logimporter_test;Integrated Security=True" -p "*.log"
