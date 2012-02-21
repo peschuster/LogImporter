@@ -39,7 +39,7 @@ namespace LogImporter
             if (lastEntry == null)
                 throw new ArgumentNullException("lastEntry");
 
-            IEnumerable<FileInfo> files = this.fileService.GetFiles(importedFileNames, lastEntry);
+            IEnumerable<FileInfo> files = this.fileService.GetFiles(importedFileNames.ToArray(), lastEntry);
 
             return this.ParseEntries(files, transformations)
                 .Where(AllowInsert(lastEntry));

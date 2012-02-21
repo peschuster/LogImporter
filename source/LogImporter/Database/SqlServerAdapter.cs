@@ -110,7 +110,7 @@ namespace LogImporter.Database
                 connection.Open();
 
                 return connection
-                    .Query<LogEntry>(string.Format(CultureInfo.InvariantCulture, "select * from {0} order by TimeStamp desc", this.tableName))
+                    .Query<LogEntry>(string.Format(CultureInfo.InvariantCulture, "select top 1 * from {0} order by TimeStamp desc", this.tableName))
                     .FirstOrDefault();
             }
         }
