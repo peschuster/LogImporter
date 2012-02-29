@@ -22,7 +22,12 @@ namespace LogImporter.Database
         
         public virtual int MaxConcurrentConnections 
         {
-            get { return 1; }
+            get
+            {
+                var builder = new SqlConnectionStringBuilder(this.connectionString);
+
+                return builder.MaxPoolSize;
+            }
         }
 
         public bool EnsureTable()
@@ -45,7 +50,7 @@ namespace LogImporter.Database
                 }
 
                 // true, if created - otherwise false.
-                return exists != 0;
+                return exists == 0;
             }
         }
 
@@ -81,7 +86,7 @@ namespace LogImporter.Database
                 // -2146232060 -> truncated data
                 if (exception.ErrorCode == -2146232060)
                 {
-                    ConsoleWriter.WriteError("Error (data exceeded range):");
+                    ConsoleWriter.WriteError("DB Error (data exceeded range):");
                     ConsoleWriter.WriteError(exception.Message);
                     ConsoleWriter.WriteError(entry.LogFilename + " " + entry.LogRow + " - " + entry.csUriStem + entry.csUriQuery + " - " + entry.csUserAgent);
 

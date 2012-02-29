@@ -15,10 +15,6 @@
 
  * W3C extended (IIS)
 
-## Performance
-
-*LogImporter* imports about 10 000 log entries per second (measured with activated multi-threading on a quad-core cpu).
-
 ## Usage
 
 *LogImporter* is used from the command line.
@@ -34,7 +30,6 @@ Furthermore the following optional parameters are available:
     -p=VALUE             Pattern for log files
     -n                   Create the table if it does not exist already
     -f, --force          Force full import of all files
-    -s, --sequential     Import data in one single thread
 
 Example usage:
 

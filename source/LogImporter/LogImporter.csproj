@@ -107,8 +107,6 @@
     <Compile Include="Converters\OptionalDateTimeConverter.cs" />
     <Compile Include="Converters\OptionalIntegerConverter.cs" />
     <Compile Include="Converters\OptionalStringConverter.cs" />
-    <Compile Include="Database\ConcurrentConnectionFactory.cs" />
-    <Compile Include="Database\SqlServerParallelAdapter.cs" />
     <Compile Include="Exceptions\UsageException.cs" />
     <Compile Include="FileRepository.cs" />
     <Compile Include="GeoIp\Country.cs" />

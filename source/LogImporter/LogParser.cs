@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using LogImporter.Database;
 using LogImporter.Transformations;
 
 namespace LogImporter
@@ -12,26 +15,35 @@ namespace LogImporter
 
         private readonly LogReader reader;
 
-        public LogParser(LogReader reader, IFileRepository fileService)
+        private readonly IDbAdapter db;
+
+        private readonly ITransformation[] transformations;
+
+        public LogParser(LogReader reader, IFileRepository fileService, IDbAdapter db, params ITransformation[] transformations)
         {
-             if (reader == null)
+            if (reader == null)
                 throw new ArgumentNullException("reader");
 
-             if (fileService == null)
-                 throw new ArgumentNullException("files");
+            if (fileService == null)
+                throw new ArgumentNullException("files");
+
+            if (db == null)
+                throw new ArgumentNullException("db");
 
             this.reader = reader;
             this.fileService = fileService;
+            this.db = db;
+            this.transformations = transformations;
         }
 
-        public IEnumerable<LogEntry> ParseEntries(params ITransformation[] transformations)
+        public void ParseEntries(out long count)
         {
             IEnumerable<FileInfo> files = this.fileService.GetFiles();
 
-            return this.ParseEntries(files, transformations);
+            this.ParseEntries(files, null, out count);
         }
 
-        public IEnumerable<LogEntry> ParseEntries(IEnumerable<string> importedFileNames, LogEntry lastEntry, params ITransformation[] transformations)
+        public void ParseEntries(IEnumerable<string> importedFileNames, LogEntry lastEntry, out long count)
         {
             if (importedFileNames == null)
                 throw new ArgumentNullException("importedFileNames");
@@ -41,8 +53,7 @@ namespace LogImporter
 
             IEnumerable<FileInfo> files = this.fileService.GetFiles(importedFileNames.ToArray(), lastEntry);
 
-            return this.ParseEntries(files, transformations)
-                .Where(AllowInsert(lastEntry));
+            this.ParseEntries(files, lastEntry, out count);
         }
 
         /// <summary>
@@ -56,25 +67,47 @@ namespace LogImporter
                 return (entry) => true;
 
             return (entry) => 
-                entry.LogFilename != lastEntry.LogFilename 
-                || entry.LogRow > lastEntry.LogRow;
+                entry.LogFilename != lastEntry.LogFilename || entry.LogRow > lastEntry.LogRow;
         }
-  
-        private IEnumerable<LogEntry> ParseEntries(IEnumerable<FileInfo> files, ITransformation[] transformations)
+
+        private void ParseEntries(IEnumerable<FileInfo> files, LogEntry lastEntry, out long count)
         {
-            foreach (var file in files)
+            count = 0;
+
+            // Only allow as many parallel threads as the size of the connection pool.
+            var options = new ParallelOptions { MaxDegreeOfParallelism = this.db.MaxConcurrentConnections };
+
+            var subCounts = new Dictionary<string, long>();
+
+            Parallel.ForEach(files, options, (file) =>
             {
-                var entries = this.reader.ReadFile(file);
+                long subCount;
 
-                foreach (var entry in entries)
+                // Read entries from file and apply transformations.
+                var entries = this.ParseEntries(file, this.transformations).Where(AllowInsert(lastEntry));
+
+                // Write entries to the database.
+                this.db.Write(entries, out subCount);
+
+                subCounts.Add(file.FullName, subCount);
+            });
+
+            // Set count to sum of all entry counts per file.
+            count = subCounts.Values.Sum();
+        }
+
+        private IEnumerable<LogEntry> ParseEntries(FileInfo file, ITransformation[] transformations)
+        {
+            var entries = this.reader.ReadFile(file);
+
+            foreach (var entry in entries)
+            {
+                if (transformations != null)
                 {
-                    if (transformations != null)
-                    {
-                        this.TransformEntry(entry, transformations);
-                    }
-
-                    yield return entry;
+                    this.TransformEntry(entry, transformations);
                 }
+
+                yield return entry;
             }
         }
 

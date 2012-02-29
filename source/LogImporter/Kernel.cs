@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LogImporter.Configurations;
 using LogImporter.Database;
 using LogImporter.GeoIp;
@@ -17,12 +18,11 @@ namespace LogImporter
             var configuration = new W3CExtended();
             var reader = new LogReader(configuration);       
     
-            IDbAdapter db = options.Sequential 
-                ? new SqlServerAdapter(options.ConnectionString, options.TableName)
-                : new SqlServerParallelAdapter(options.ConnectionString, options.TableName);
+            IDbAdapter db = new SqlServerAdapter(options.ConnectionString, options.TableName);
 
             var files = new FileRepository(options.Directory, options.Pattern);
 
+            // Create the table in db (if not existent)
             if (options.CreateTable)
             {
                 db.EnsureTable();
@@ -30,32 +30,32 @@ namespace LogImporter
 
             using (var service = new GeoIpLookupService())
             {
-                var parser = new LogParser(reader, files);
-
-                var transformations = new ITransformation[] 
-                {
+                // Initialize log parser
+                var parser = new LogParser(
+                    reader,
+                    files,
+                    db,
                     new CleanUrlTransformation(),
-                    new GeoLookupTransformation(service)                
-                };
+                    new GeoLookupTransformation(service));
 
-                IEnumerable<LogEntry> entries;
+                long count;
                 LogEntry lastEntry = db.GetLastEntry();
                 
                 if (options.Force || lastEntry == null)
                 {
-                    entries = parser.ParseEntries(transformations);
+                    ConsoleWriter.WriteInfo("Importing all log files...");
+
+                    parser.ParseEntries(out count);
                 } 
                 else
                 {
                     IEnumerable<string> importedFileNames = db.GetFileNames();
 
-                    entries = parser.ParseEntries(importedFileNames, lastEntry, transformations);
+                    ConsoleWriter.WriteInfo("{0} files already in database.", importedFileNames.Count());
+                    ConsoleWriter.WriteInfo("Importing only new entries...", importedFileNames.Count());
+
+                    parser.ParseEntries(importedFileNames, lastEntry, out count);
                 }
-
-                long count;
-
-                // Write log entries into database.
-                db.Write(entries, out count);
 
                 ConsoleWriter.WriteSuccess("Imported {0} log entries.", count);
             }

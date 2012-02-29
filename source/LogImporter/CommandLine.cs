@@ -41,11 +41,6 @@ namespace LogImporter
         public bool Force { get; set; }
 
         /// <summary>
-        /// Import data in one single thread.
-        /// </summary>
-        public bool Sequential { get; set; }
-
-        /// <summary>
         /// Create the table if it does not alread exists.
         /// </summary>
         public bool CreateTable { get; set; }
@@ -73,10 +68,10 @@ namespace LogImporter
         {
             try
             {
+                // Set default values
                 this.Directory = new DirectoryInfo(".");
                 this.Pattern = "*.*";
                 this.Force = false;
-                this.Sequential = false;
 
                 List<string> unknown = options.Parse(arguments);
 
@@ -146,12 +141,7 @@ namespace LogImporter
                 .Add(
                     "f|force",
                     "Force full import of all files",
-                    (string b) => this.Force = b != null)
-
-                .Add(
-                    "s|sequential",
-                    "Import data in one single thread.",
-                    (string b) => this.Sequential = b != null);
+                    (string b) => this.Force = b != null);
 
             return options;
         }

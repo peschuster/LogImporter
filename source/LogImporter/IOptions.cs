@@ -30,11 +30,6 @@ namespace LogImporter
         bool Force { get; set; }
 
         /// <summary>
-        /// Import data in one single thread.
-        /// </summary>
-        bool Sequential { get; set; }
-
-        /// <summary>
         /// Create the table if it does not alread exists.
         /// </summary>
         bool CreateTable { get; set; }

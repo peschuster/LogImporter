@@ -48,13 +48,16 @@ namespace LogImporter.Database
         private static IEnumerable<PropertyInfo> TypePropertiesCache(Type type)
         {
             IEnumerable<PropertyInfo> pis;
+
             if (typeProperties.TryGetValue(type.TypeHandle, out pis))
             {
                 return pis;
             }
 
             var properties = type.GetProperties();
+
             typeProperties[type.TypeHandle] = properties;
+            
             return properties;
         }
 
@@ -69,11 +72,11 @@ namespace LogImporter.Database
                 if (type.IsInterface && name.StartsWith("I"))
                     name = name.Substring(1);
 
-                //NOTE: This as dynamic trick should be able to handle both our own Table-attribute as well as the one in EntityFramework 
-                var tableattr = type.GetCustomAttributes(false).Where(attr => attr.GetType().Name == "TableAttribute").SingleOrDefault() as dynamic;
+                // NOTE: This as dynamic trick should be able to handle both our own Table-attribute as well as the one in EntityFramework 
+                var tableattribute = type.GetCustomAttributes(false).Where(attr => attr.GetType().Name == "TableAttribute").SingleOrDefault() as dynamic;
 
-                if (tableattr != null)
-                    name = tableattr.Name;
+                if (tableattribute != null)
+                    name = tableattribute.Name;
                 
                 typeTableName[type.TypeHandle] = name;
             }
