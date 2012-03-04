@@ -79,8 +79,14 @@
     <Reference Include="xunit">
       <HintPath>..\packages\xunit.1.9.0.1566\lib\xunit.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.extensions">
+      <HintPath>..\packages\xunit.extensions.1.9.0.1566\lib\xunit.extensions.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\OptionalDateTimeConverterTest.cs" />
+    <Compile Include="Converters\OptionalIntegerConverterTest.cs" />
+    <Compile Include="Converters\OptionalStringConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transformations\CleanUrlTransformationTest.cs" />
     <Compile Include="Transformations\GeoLookupTransformationTest.cs" />
