@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -13,7 +14,7 @@ namespace LogImporter.GeoIp
 
         private bool disposed;
 
-        private readonly IDictionary<string, Country> cache;
+        private readonly ConcurrentDictionary<string, Country> cache;
 
         public GeoIpLookupService()
         {
@@ -23,17 +24,12 @@ namespace LogImporter.GeoIp
 
             this.service = new LookupService(this.geoIpDatePath, LookupService.GeoipMemoryCache);
 
-            this.cache = new Dictionary<string, Country>();
+            this.cache = new ConcurrentDictionary<string, Country>();
         }
 
         public Country GetCountry(string ipAddress)
         {
-            if (!this.cache.ContainsKey(ipAddress))
-            {
-                this.cache[ipAddress] = this.service.GetCountry(ipAddress);
-            }
-
-            return this.cache[ipAddress];
+            return this.cache.GetOrAdd(ipAddress, a => this.service.GetCountry(a));
         }
 
         public void Dispose()
